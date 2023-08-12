@@ -19,6 +19,7 @@ function App() {
     console.log("ws opened");
   }
   connection.onmessage = (event) => {
+    console.log(event.data)
     setContents(event.data);
   }
 
@@ -63,6 +64,7 @@ function App() {
           modules={modules}
           formats={formats}
           placeholder="write your content ...."
+          value={contents}
           onChange={handleProcedureContentChange}
           style={{ height: "220px" }}
         >

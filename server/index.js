@@ -27,7 +27,18 @@ wsServer.on('connection', function(connection) {
   // Store the new connection and handle messages
   clients[userId] = connection;
   console.log(`${userId} connected.`);
+  wsServer.on('message', function(message){
+    console.log("received message")
+    wsServer.broadcast(message);
+  })
 });
+
+wsServer.broadcast = function broadcast(message){
+    console.log(message);
+    wsServer.clients.forEach(function each(client){
+        client.send(msg);
+    });
+};
 
 app.get("/api", (req, res)=>{
   res.header('Access-Control-Allow-Origin', '*');
