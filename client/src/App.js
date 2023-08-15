@@ -1,30 +1,38 @@
-import React, { useEffect, useRef, useState } from "react";
-// import useWebSocket from "react-use";
-import 'quill/dist/quill.snow.css'
-import ReactQuill from 'react-quill'
-import {useDispatch, useSelector} from 'react-redux';
-import {contentUpdated} from './contentSlice';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import React, { useEffect, useState, useRef } from "react";
+import 'quill/dist/quill.snow.css';
+import ReactQuill from 'react-quill';
 
-const WS_URL = "ws://localhost:8000";
+const WS_URL = "ws://localhost:3001";
 
 function App() {
 
-  // const ws = useRef(null);
+  const [message, setMessage] = useState('');
+  const socket = useRef('');
 
-  // const { sendMessage, lastMessage, readyState } = useWebSocket(WS_URL);
-  const [connection, setConnection] = useState(new WebSocket(WS_URL));
+  useEffect(() => {
+    socket.connection = new WebSocket(WS_URL);
 
-  connection.onopen = () =>{
-    console.log("ws opened");
+    if (!socket.connection) return;
+    socket.connection.addEventListener('open', (event) => {
+      console.log('Connected to server!');
+    });
+
+    socket.connection.addEventListener('message', (event) => {
+      setMessage(event.data);
+      console.log('Message from server ', event.data);
+    });
+  }, []);
+
+  const handleProcedureContentChange = (value) => {
+    if (message === value) return;
+    console.log(value);
+    setMessage(value);
+    if (!socket.connection) return;
+    socket.connection.send(value);
+    console.log("send message to server", value);
   }
-  connection.onmessage = (event) => {
-    console.log(event.data)
-    setContents(event.data);
-  }
 
-  const [contents, setContents] = useState('');
-  
+
   var modules = {
     toolbar: [
       [{ size: ["small", false, "large", "huge"] }],
@@ -49,22 +57,16 @@ function App() {
     "link", "image", "align", "size",
   ];
 
-  const handleProcedureContentChange = (content) => {
-    setContents(content);
-    connection.send(contents);
-  };
-
-
   return (
     <div >
       <h1 style={{ textAlign: "center" }}>Text Editor</h1>
-      <div style={{ display: "grid", justifyContent: "center"}}>
+      <div style={{ display: "grid", justifyContent: "center" }}>
         <ReactQuill
           theme="snow"
           modules={modules}
           formats={formats}
           placeholder="write your content ...."
-          value={contents}
+          value={message}
           onChange={handleProcedureContentChange}
           style={{ height: "220px" }}
         >
