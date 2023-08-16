@@ -6,7 +6,7 @@ const awsServerlessExpress = require('aws-serverless-express');
 const app = express();
 const server = awsServerlessExpress.createServer(app);
 
-module.exports = server;
+module.exports = { server, awsServerlessExpress };
 
 const wss = new webSocket.Server({ server: server });
 
