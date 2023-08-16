@@ -1,13 +1,12 @@
 const http = require('http');
 const webSocket = require('ws');
 const express = require('express');
+const awsServerlessExpress = require('aws-serverless-express');
 
-const port = 3001;
+const app = express();
+const server = awsServerlessExpress.createServer(app);
 
-
-const app = express()
-
-const server = app.listen(port, () => { console.log(`Server listening on port ${port}`) });
+module.exports = server;
 
 const wss = new webSocket.Server({ server: server });
 
